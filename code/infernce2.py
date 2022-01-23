@@ -20,6 +20,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Based on https://github.com/pytorch/examples/blob/master/mnist/main.py
 def net():
+    '''
+    This part must be the same one in your training code
+    '''
     num_classes = 133
     model = models.resnet34(pretrained=True)
 #     relu_inplace(model)  
