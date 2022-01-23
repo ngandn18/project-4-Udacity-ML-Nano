@@ -6,5 +6,9 @@ Tuning - Training - Deploy the endpoint on AWS
 
 Lambda function for calling endpoint to predict image classification.
 
-Many important adjustment from lecture notes
+Many important adjustment from lecture notes.
+
+More details in writeup.pdf.
+
+
 
