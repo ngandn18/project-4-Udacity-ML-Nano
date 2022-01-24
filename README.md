@@ -1,4 +1,4 @@
-## Project 4 - Udacity AWS Machine Learning Engineer Naodegree. 
+## Project 4 - Udacity AWS Machine Learning Engineer Nanodegree. 
 
 ### Data - [dog breed - Udacity](https://s3-us-west-1.amazonaws.com/udacity-aind/dog-project/dogImages.zip)
 
