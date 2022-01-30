@@ -69,7 +69,7 @@ def test(model, test_loader, criterion):
 
     running_loss=0
     running_corrects=0
-    dt_sizes = 0
+    # dt_sizes = 0
     
     for inputs, labels in test_loader:
         inputs = inputs.to(device)
@@ -81,17 +81,19 @@ def test(model, test_loader, criterion):
         _, preds = torch.max(outputs, 1)
         running_loss += loss.item() * inputs.size(0)
         running_corrects += torch.sum(preds == labels.data)
-        dt_sizes += inputs.size(0)
+        # dt_sizes += inputs.size(0)
 
-    test_loss = running_loss / dt_sizes
-    test_acc = running_corrects.double() / dt_sizes
+    # test_loss = running_loss / dt_sizes
+    # test_acc = running_corrects.double() / dt_sizes
+    test_loss = running_loss / len(test_loader.dataset)
+    test_acc = running_corrects.double() / len(test_loader.dataset)
     
     print(f'Test Loss: {test_loss}, Test Accu: {test_acc}')
    
     # logger.info("\nTest set: Average loss: {:.4f}, Accuracy: {}\n".format(test_loss, test_acc))
 
-
-def train(model, dataloaders, criterion, optimizer, scheduler, dataset_sizes):
+# def train(model, dataloaders, criterion, optimizer, scheduler, dataset_sizes):
+def train(model, dataloaders, criterion, optimizer, scheduler):
     '''
     TODO: Complete this function that can take a model and
           data loaders for training and will get train the model
@@ -149,8 +151,10 @@ def train(model, dataloaders, criterion, optimizer, scheduler, dataset_sizes):
             if phase == 'train':
                 scheduler.step()
 
-            epoch_loss = running_loss / dataset_sizes[phase]
-            epoch_acc = running_corrects.double() / dataset_sizes[phase]
+            # epoch_loss = running_loss / dataset_sizes[phase]
+            # epoch_acc = running_corrects.double() / dataset_sizes[phase]
+            epoch_loss = running_loss / len(dataloaders[phase].dataset)
+            epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
 
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(
                 phase, epoch_loss, epoch_acc))
@@ -217,7 +221,8 @@ def create_data_loaders(data_dir, batch_size):
 
     # print(f'Datasets sizes: {dataset_sizes}\n')
     print('Finish loading data\n')
-    return loaders, dataset_sizes, class_names
+    # return loaders, dataset_sizes, class_names
+    return loaders, class_names
 
 
 def main():
@@ -226,7 +231,7 @@ def main():
     data_dir = 'dogImages'
     batch_size = 2
     # batch_size = 64
-    loaders, dataset_sizes,  class_names = create_data_loaders(data_dir, batch_size)
+    loaders, class_names = create_data_loaders(data_dir, batch_size)
     
     '''
     TODO: Initialize a model by calling the net function
@@ -245,7 +250,7 @@ def main():
     '''
     scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
     
-    model=train(model, loaders, loss_criterion, optimizer, scheduler, dataset_sizes)
+    model=train(model, loaders, loss_criterion, optimizer, scheduler)
     
     '''
     TODO: Test the model to see its accuracy

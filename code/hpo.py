@@ -45,7 +45,7 @@ def test(model, test_loader, criterion):
 
     running_loss=0
     running_corrects=0
-    dt_sizes = 0
+    # dt_sizes = 0
     
     for inputs, labels in test_loader:
         inputs = inputs.to(device)
@@ -57,10 +57,12 @@ def test(model, test_loader, criterion):
         _, preds = torch.max(outputs, 1)
         running_loss += loss.item() * inputs.size(0)
         running_corrects += torch.sum(preds == labels.data)
-        dt_sizes += inputs.size(0)
+        # dt_sizes += inputs.size(0)
 
-    test_loss = running_loss / dt_sizes
-    test_acc = running_corrects.double() / dt_sizes
+    # test_loss = running_loss / dt_sizes
+    # test_acc = running_corrects.double() / dt_sizes
+    test_loss = running_loss / len(test_loader.dataset)
+    test_acc = running_corrects.double() / len(test_loader.dataset)
     
     # print(f'Test Loss: {test_loss: .4f}, Test Accuracy: {test_acc: .4f}')
     # print(f"\nTest running time: {time()-begin: .1f}s")
@@ -72,7 +74,8 @@ def test(model, test_loader, criterion):
     logger.info("Test running time: {:.1f}s".format(test_time))
 
     
-def train(model, dataloaders, criterion, optimizer, scheduler, dataset_sizes):
+# def train(model, dataloaders, criterion, optimizer, scheduler, dataset_sizes):
+def train(model, dataloaders, criterion, optimizer, scheduler):
     '''
     TODO: Complete this function that can take a model and
           data loaders for training and will get train the model
@@ -132,8 +135,11 @@ def train(model, dataloaders, criterion, optimizer, scheduler, dataset_sizes):
             if phase == 'train':
                 scheduler.step()
 
-            epoch_loss = running_loss / dataset_sizes[phase]
-            epoch_acc = running_corrects.double() / dataset_sizes[phase]
+            # more exact size of dataset
+            # epoch_loss = running_loss / dataset_sizes[phase]
+            # epoch_acc = running_corrects.double() / dataset_sizes[phase]
+            epoch_loss = running_loss / len(dataloaders[phase].dataset)
+            epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
 
             # print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
             
@@ -153,9 +159,6 @@ def train(model, dataloaders, criterion, optimizer, scheduler, dataset_sizes):
     seconds = time_elapsed % 60
     print('\n---\nTraining complete in {:.0f}m {:.0f}s'.format(minutes, seconds))
     print('Best val Acc: {:4f}'.format(best_acc))
-    # print('Training complete in {:.0f}m {:.0f}s'.format(
-    #     time_elapsed // 60, time_elapsed % 60))
-    # print('Best val Acc: {:4f}'.format(best_acc))
 
     # load best model weights
     model.load_state_dict(best_model_wts)
@@ -222,8 +225,9 @@ def create_data_loaders(data_dir, batch_size):
     class_names = image_datasets['train'].classes
 
     print('Finish loading data: \n',dataset_sizes)
+    # return loaders, daset_sizes, class_names
 
-    return loaders, dataset_sizes, class_names
+    return loaders, class_names
 
 
 def main(args):
@@ -235,7 +239,7 @@ def main(args):
     '''
     TODO: Creat data
     '''
-    loaders, dataset_sizes,  class_names = create_data_loaders(args.data_dir, args.batch_size)
+    loaders, class_names = create_data_loaders(args.data_dir, args.batch_size)
     
     '''
     TODO: Initialize a model by calling the net function
@@ -260,7 +264,7 @@ def main(args):
     TODO: Call the train function to start training your model
     Remember that you will need to set up a way to get training data from S3
     '''
-    model=train(model, loaders, loss_criterion, optimizer, scheduler, dataset_sizes)
+    model=train(model, loaders, loss_criterion, optimizer, scheduler)
 
     # model=train(model, train_loader, validation_loader, criterion, optimizer)
    
